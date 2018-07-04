@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Navbar :total="countCart()" @onSubmit-page="onSubmit" @logout-page="logout" />
+    <Navbar :total="countCart()" @onSearch="onSearchName" @safety="safetyPage" @sport="sportPage" @logout-page="logout" />
     <div id="myModal" class="modal fade" role="dialog">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -85,16 +85,17 @@
 </template>
 
 <script>
-  import axios from 'axios'
-  import swal from 'sweetalert'
-  import Navbar from '@/components/Navbar.vue'
-  import Cart from '@/components/Cart.vue'
-  import Carousel from '@/components/Carousel.vue'
-  import Product from '@/components/Product.vue'
+import axios from 'axios'
+import swal from 'sweetalert'
+import Navbar from '@/components/Navbar.vue'
+import Cart from '@/components/Cart.vue'
+import Carousel from '@/components/Carousel.vue'
+import Product from '@/components/Product.vue'
 
-  const baseURL = 'http://35.240.167.27'
+const baseURL = 'http://e-commerce-server.unguhiu.com'
+// const baseURL = 'http://localhost:3000'
 
-  export default {
+export default {
   name: 'home',
   components: {
     Navbar,
@@ -108,7 +109,6 @@
       cartItem: [],
       checkoutItem: [],
       totalPrice: 0,
-      search: ''
     }
   },
   methods: {
@@ -121,6 +121,33 @@
     },
     formatPrice: function (price) {
       return `Rp. ${price.toLocaleString()}`
+    },
+    safetyPage: function (value) {
+      axios.get(`${baseURL}/items/category?category=${value}`)
+        .then(response => {
+          this.listItem = response.data.data
+        })
+        .catch(function (err) {
+          swal('Your error', err.response.data.data.message, 'error')
+        })
+    },
+    sportPage: function (value) {
+      axios.get(`${baseURL}/items/category?category=${value}`)
+        .then(response => {
+          this.listItem = response.data.data
+        })
+        .catch(function (err) {
+          swal('Your error', err.response.data.data.message, 'error')
+        })
+    },
+    onSearchName: function (value) {
+      axios.get(`${baseURL}/items/search?name=${value}`)
+        .then(response => {
+          this.listItem = response.data.data
+        })
+        .catch(function (err) {
+          swal('Your error', err.response.data.data.message, 'error')
+        })
     },
     showItem: function () {
       axios.get(`${baseURL}/items/view`)
@@ -209,41 +236,40 @@
       localStorage.setItem('cart', JSON.stringify(this.cartItem))
     },
     checkout: function () {
-      let apptoken = localStorage.getItem('token')
-      let iduser = localStorage.getItem('id')
-      this.listItem.forEach(item => {
-        this.cartItem.forEach(cart => {
-          if (item.name === cart.name) {
-            item.stock -= cart.quantity
-          }
-          axios.put(`${baseURL}/items/update/${item._id}`, {
-              name: item.name,
-              price: item.price,
-              stock: item.stock,
-              category: item.category,
-              link: item.link
-            }, {
-              headers: {
-                apptoken,
-                id: iduser
-              }
-            })
-            .then(response => {
-              let index = this.listItem.findIndex(item => item._id == response.data.data._id)
-              this.listItem[index].name = name
-              this.listItem[index].price = price
-              this.listItem[index].stock = stock
-              this.listItem[index].category = category
-            })
-            .catch(err => {
-              swal("Your error", err.response.data.data.message, "error")
-            })
-        })
-      })
       if (localStorage.getItem('token')) {
-        let iduser = localStorage.getItem('id')
         let cart = localStorage.getItem('cart')
         let apptoken = localStorage.getItem('token')
+        let iduser = localStorage.getItem('id')
+        this.listItem.forEach(item => {
+          this.cartItem.forEach(cart => {
+            if (item.name === cart.name && item.category === cart.category) {
+              item.stock === cart.quantity
+              axios.put(`${baseURL}/items/update/${item._id}`, {
+                  name: item.name,
+                  price: item.price,
+                  stock: item.stock,
+                  category: item.category
+                }, {
+                  headers: {
+                    apptoken,
+                    id: iduser
+                  }
+                })
+                .then(response => {
+                  let index = this.listItem.findIndex(item => item._id == response.data.data._id)
+                  this.listItem[index].name = name
+                  this.listItem[index].price = price
+                  this.listItem[index].stock = stock
+                  this.listItem[index].category = category
+
+                })
+                .catch(err => {
+                  swal("Your error", err.response.data.data.message, "error")
+                })
+            }
+
+          })
+        })
         let parseJ = JSON.parse(cart)
         parseJ.forEach(itemCart => {
           this.checkoutItem.push({
@@ -262,6 +288,9 @@
           })
           .then(response => {
             swal('Success', response.data.message, 'success')
+            this.$router.push({
+              name: "history"
+            })
           })
           .catch(err => {
             swal('Your error', err.response.statusText, 'error')
@@ -271,18 +300,6 @@
       } else {
         swal('You must log-in!', 'You must log-in', 'warning')
       }
-    },
-    onSubmit: function (userData){
-      let search = this.search
-      axios.get(`${baseURL}/items/search`, {
-        search:userData.search
-        })
-        .then(response => {
-          this.listItem = response.data.data
-        })
-        .catch(function (err) {
-          swal('Your error', err.response.data.data.message, 'error')
-        })
     },
     logout: function () {
       localStorage.removeItem('id')

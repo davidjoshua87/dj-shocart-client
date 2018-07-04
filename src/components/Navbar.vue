@@ -19,10 +19,10 @@
 						</a>
 						<ul class="dropdown-menu">
 							<li>
-								<router-link class="item" to="/">Safety Shoes</router-link>
+								<a @click="safety" class="item">Safety Shoes</a>
 							</li>
 							<li>
-								<router-link class="item" to="/">Sport Shoes</router-link>
+								<a @click="sport" class="item">Sport Shoes</a>
 							</li>
 						</ul>
 					</li>
@@ -31,7 +31,7 @@
 					<div class="form-group">
 						<input v-model="search" type="text" class="form-control" placeholder="Search">
 					</div>
-					<button @click="onSubmit" type="submit" class="btn btn-default glyphicon glyphicon-search"></button>
+					<button @click="onSearch" type="submit" class="btn btn-default glyphicon glyphicon-search"></button>
 				</form>
 				<ul v-if="buttonlogin==true" class="nav navbar-nav navbar-right">
 					<li>
@@ -82,11 +82,17 @@ export default {
 		}
 	},
 	methods: {
-		onSubmit: function (){
-			let userData = {
-				search: this.search
-			}
-			this.$emit('onSubmit-page', userData)
+		safety: function (event) {
+			let category = 'Safety Shoes'
+			this.$emit('safety', category)
+		},
+		sport: function (event) {
+			let category = 'Sport Shoes'
+			this.$emit('sport', category)
+		},
+		onSearch: function (event){
+			let search = this.search
+			this.$emit('onSearch', search)
 		},
 		logout: function () {
 			this.$emit('logout-page')

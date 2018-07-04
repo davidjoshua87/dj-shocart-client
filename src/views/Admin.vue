@@ -104,7 +104,8 @@ import axios from 'axios'
 import swal from 'sweetalert'
 import AdminManage from '@/components/AdminManage.vue'
 
-const baseURL = 'http://35.240.167.27'
+const baseURL = 'http://e-commerce-server.unguhiu.com'
+// const baseURL = 'http://localhost:3000'
 
 export default {
   name: 'admin',
