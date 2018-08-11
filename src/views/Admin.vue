@@ -105,225 +105,225 @@
 </template>
 
 <script>
-  import axios from 'axios'
-  import swal from 'sweetalert'
-  import AdminManage from '@/components/AdminManage.vue'
+import axios from 'axios'
+import swal from 'sweetalert'
+import AdminManage from '@/components/AdminManage.vue'
 
-  const baseURL = 'http://e-commerce-server.unguhiu.com'
-  // const baseURL = 'http://localhost:3000'
+// const baseURL = 'http://e-commerce-server.unguhiu.com'
+const baseURL = 'http://localhost:3000'
 
-  export default {
-    name: 'admin',
-    components: {
-      AdminManage
-    },
-    data: function () {
-      return {
-        name: '',
-        price: '',
-        stock: '',
-        category: '',
-        image: '',
-        progress: 0,
-        listItem: []
-      }
-    },
-    created: function () {
-      if (localStorage.getItem('role') != 'admin') {
-        swal('Error', 'you role cant get access', 'warning')
-        this.$router.push({
-          name: "home"
+export default {
+  name: 'admin',
+  components: {
+    AdminManage
+  },
+  data: function () {
+    return {
+      name: '',
+      price: '',
+      stock: '',
+      category: '',
+      image: '',
+      progress: 0,
+      listItem: []
+    }
+  },
+  created: function () {
+    if (localStorage.getItem('role') !== 'admin') {
+      swal('Error', 'you role cant get access', 'warning')
+      this.$router.push({
+        name: 'home'
+      })
+    }
+  },
+  methods: {
+    showItem: function () {
+      axios.get(`${baseURL}/items/view`)
+        .then(response => {
+          this.listItem = response.data.data
         })
-      }
+        .catch(function (err) {
+          swal('Your error', err.response.data.data.message, 'error')
+        })
     },
-    methods: {
-      showItem: function () {
-        axios.get(`${baseURL}/items/view`)
-          .then(response => {
-            this.listItem = response.data.data
-          })
-          .catch(function (err) {
-            swal('Your error', err.response.data.data.message, 'error')
-          })
-      },
-      postimage: function () {
-        let apptoken = localStorage.getItem('token')
-        let iduser = localStorage.getItem('id')
-        let formData = new FormData()
-        formData.append('name', this.name)
-        formData.append('price', this.price)
-        formData.append('stock', this.stock)
-        formData.append('category', this.category)
-        formData.append('image', this.image)
-        let self = this
-        axios.post(`${baseURL}/items/`, formData, {
-            headers: {
-              apptoken,
-              id: iduser
-            },
-            'Content-Type': 'multipart/form-data',
-            onUploadProgress: function (progressEvent) {
-              let percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-              self.progress = percent
-            },
-          })
-          .then(response => {
-            swal('Success', 'Item success added', 'success')
-            self.progress = 0
-            this.name = ''
-            this.price = ''
-            this.stock = ''
-            this.category = ''
-            this.image = ''
-            this.listItem.push(response.data.data)
-          })
-          .catch(err => {
-            swal('Your error', err.response.statusText, 'error')
-            self.progress = 0
-          })
-      },
-      postimageHandler: function (event) {
-        this.image = event.target.files[0]
-      },
-      updateItem: function (id, name, price, stock, category, image, old) {
-        let apptoken = localStorage.getItem('token')
-        let iduser = localStorage.getItem('id')
-        let formData = new FormData()
-        formData.append('image', image)
-        axios.post(`${baseURL}/items/upload`, formData, {
+    postimage: function () {
+      let apptoken = localStorage.getItem('token')
+      let iduser = localStorage.getItem('id')
+      let formData = new FormData()
+      formData.append('name', this.name)
+      formData.append('price', this.price)
+      formData.append('stock', this.stock)
+      formData.append('category', this.category)
+      formData.append('image', this.image)
+      let self = this
+      axios.post(`${baseURL}/items/`, formData, {
+        headers: {
+          apptoken,
+          id: iduser
+        },
+        'Content-Type': 'multipart/form-data',
+        onUploadProgress: function (progressEvent) {
+          let percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          self.progress = percent
+        }
+      })
+        .then(response => {
+          swal('Success', 'Item success added', 'success')
+          self.progress = 0
+          this.name = ''
+          this.price = ''
+          this.stock = ''
+          this.category = ''
+          this.image = ''
+          this.listItem.push(response.data.data)
+        })
+        .catch(err => {
+          swal('Your error', err.response.statusText, 'error')
+          self.progress = 0
+        })
+    },
+    postimageHandler: function (event) {
+      this.image = event.target.files[0]
+    },
+    updateItem: function (id, name, price, stock, category, image, old) {
+      let apptoken = localStorage.getItem('token')
+      let iduser = localStorage.getItem('id')
+      let formData = new FormData()
+      formData.append('image', image)
+      axios.post(`${baseURL}/items/upload`, formData, {
+        headers: {
+          apptoken,
+          id: iduser
+        }
+      })
+        .then(response => {
+          axios.put(`${baseURL}/items/${id}`, {
+            name,
+            price,
+            stock,
+            category,
+            link: response.data.link
+          }, {
             headers: {
               apptoken,
               id: iduser
             }
           })
-          .then(response => {
+            .then(response => {
+              swal('Success update!', response.data.message, 'success')
+              let index = this.listItem.findIndex(item => item._id === response.data.data._id)
+              this.listItem[index].name = name
+              this.listItem[index].price = price
+              this.listItem[index].stock = stock
+              this.listItem[index].category = category
+            })
+            .catch(err => {
+              swal('Your error', err.response.data.data.message, 'error')
+            })
+        })
+        .catch(err => {
+          if (err.response.status === 500) {
             axios.put(`${baseURL}/items/${id}`, {
-                name,
-                price,
-                stock,
-                category,
-                link: response.data.link
-              }, {
-                headers: {
-                  apptoken,
-                  id: iduser
-                }
-              })
+              name,
+              price,
+              stock,
+              category,
+              link: old
+            }, {
+              headers: {
+                apptoken,
+                id: iduser
+              }
+            })
               .then(response => {
-                swal("Success update!", response.data.message, "success");
-                let index = this.listItem.findIndex(item => item._id == response.data.data._id)
+                swal('Successful updates! without changing the old image', response.data.message, 'success')
+                let index = this.listItem.findIndex(item => item._id === response.data.data._id)
                 this.listItem[index].name = name
                 this.listItem[index].price = price
                 this.listItem[index].stock = stock
                 this.listItem[index].category = category
               })
               .catch(err => {
-                swal("Your error", err.response.data.data.message, "error")
+                swal('Your error', err.response.data.data.message, 'error')
               })
-          })
-          .catch(err => {
-            if (err.response.status == 500) {
-              axios.put(`${baseURL}/items/${id}`, {
-                  name,
-                  price,
-                  stock,
-                  category,
-                  link: old
-                }, {
-                  headers: {
-                    apptoken,
-                    id: iduser
-                  }
-                })
-                .then(response => {
-                  swal("Successful updates! without changing the old image", response.data.message, "success");
-                  let index = this.listItem.findIndex(item => item._id == response.data.data._id)
-                  this.listItem[index].name = name
-                  this.listItem[index].price = price
-                  this.listItem[index].stock = stock
-                  this.listItem[index].category = category
-                })
-                .catch(err => {
-                  swal("Your error", err.response.data.data.message, "error")
-                })
-            }
-          })
-      },
-      deleteItem: function (id) {
-        let apptoken = localStorage.getItem('token')
-        let iduser = localStorage.getItem('id')
-        swal({
-            title: "Are you sure?",
-            text: "After delete, you can't get this item again!",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-          })
-          .then((willDelete) => {
-            if (willDelete) {
-              axios.delete(`${baseURL}/items/${id}`, {
-                  headers: {
-                    apptoken,
-                    id: iduser
-                  }
-                })
-                .then(response => {
-                  swal(response.data.message, {
-                    icon: "success",
-                  })
-                  let index = this.listItem.findIndex(item => item._id == response.data.data._id)
-                  this.listItem.splice(index, 1)
-                })
-                .catch(err => {
-                  swal("Your error", err.response.data.data.message, "error")
-                })
-            } else {
-              swal("Failed remove item")
-            }
-          })
-      },
-      logout: function () {
-        localStorage.removeItem('id')
-        localStorage.removeItem('name')
-        localStorage.removeItem('token')
-        localStorage.removeItem('role')
-        this.$router.push({
-          name: "login"
+          }
         })
-      }
     },
-    mounted: function () {
-      this.showItem()
+    deleteItem: function (id) {
+      let apptoken = localStorage.getItem('token')
+      let iduser = localStorage.getItem('id')
+      swal({
+        title: 'Are you sure?',
+        text: `After delete, you can't get this item again!`,
+        icon: 'warning',
+        buttons: true,
+        dangerMode: true
+      })
+        .then((willDelete) => {
+          if (willDelete) {
+            axios.delete(`${baseURL}/items/${id}`, {
+              headers: {
+                apptoken,
+                id: iduser
+              }
+            })
+              .then(response => {
+                swal(response.data.message, {
+                  icon: 'success'
+                })
+                let index = this.listItem.findIndex(item => item._id === response.data.data._id)
+                this.listItem.splice(index, 1)
+              })
+              .catch(err => {
+                swal('Your error', err.response.data.data.message, 'error')
+              })
+          } else {
+            swal('Failed remove item')
+          }
+        })
+    },
+    logout: function () {
+      localStorage.removeItem('id')
+      localStorage.removeItem('name')
+      localStorage.removeItem('token')
+      localStorage.removeItem('role')
+      this.$router.push({
+        name: 'login'
+      })
     }
+  },
+  mounted: function () {
+    this.showItem()
   }
+}
 </script>
 
 <style scoped>
-  .admin {
-    background-color: white;
-  }
+.admin {
+  background-color: white;
+}
 
-  th.text-center {
-    color: blue;
-  }
+th.text-center {
+  color: blue;
+}
 
-  .top {
-    margin-top: 50px;
-  }
+.top {
+  margin-top: 50px;
+}
 
-  .navbar-default {
-    background-color: azure;
-  }
+.navbar-default {
+  background-color: azure;
+}
 
-  #footer {
-    bottom: 0;
-    width: 100%;
-    position: fixed;
-    height: 60px;
-    background-color: azure;
-  }
+#footer {
+  bottom: 0;
+  width: 100%;
+  position: fixed;
+  height: 60px;
+  background-color: azure;
+}
 
-  .footer-block {
-    margin: 20px 0;
-  }
+.footer-block {
+  margin: 20px 0;
+}
 </style>

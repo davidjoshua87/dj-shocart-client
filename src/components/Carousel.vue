@@ -10,16 +10,16 @@
       </ol>
       <div class="carousel-inner">
         <div class="item active">
-          <img src="../assets/img/slider1.jpg" alt="Safety" style="width:90%;">
+          <img src="../assets/img/slider2.jpg" alt="Safety" style="width:90%;">
         </div>
         <div class="item">
-          <img src="../assets/img/slider2.jpg" alt="Sport" style="width:90%;">
+          <img src="../assets/img/slider1.jpg" alt="Sport" style="width:90%;">
         </div>
         <div class="item">
-          <img src="../assets/img/slider1.jpg" alt="Safety" style="width:90%;">
+          <img src="../assets/img/slider2.jpg" alt="Safety" style="width:90%;">
         </div>
         <div class="item">
-          <img src="../assets/img/slider2.jpg" alt="Sport" style="width:90%;">
+          <img src="../assets/img/slider1.jpg" alt="Sport" style="width:90%;">
         </div>
       </div>
       <a class="left carousel-control" href="#myCarousel" data-slide="prev">

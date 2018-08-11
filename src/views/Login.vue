@@ -30,43 +30,43 @@
 import axios from 'axios'
 import swal from 'sweetalert'
 
-const baseURL = 'http://e-commerce-server.unguhiu.com'
-// const baseURL = 'http://localhost:3000'
+// const baseURL = 'http://e-commerce-server.unguhiu.com'
+const baseURL = 'http://localhost:3000'
 
 export default {
   name: 'login',
   data: function () {
     return {
       email: '',
-      password: '',
+      password: ''
     }
   },
   methods: {
     login: function () {
       axios.post(`${baseURL}/customers/login`, {
-          email: this.email,
-          password: this.password
-        })
+        email: this.email,
+        password: this.password
+      })
         .then(response => {
-          swal("Welcome", response.data.message, "success")
+          swal('Welcome', response.data.message, 'success')
             .then(() => {
               localStorage.setItem('id', response.data.id)
               localStorage.setItem('name', response.data.fullname)
               localStorage.setItem('token', response.data.access)
               localStorage.setItem('role', response.data.role)
-              if (response.data.role == 'admin')
+              if (response.data.role === 'admin') {
                 this.$router.push({
-                  name: "admin"
+                  name: 'admin'
                 })
-              else {
+              } else {
                 this.$router.push({
-                  name: "home"
+                  name: 'home'
                 })
               }
             })
         })
         .catch(err => {
-          swal("Your error", err.response.data.message, "error")
+          swal('Your error', err.response.data.message, 'error')
         })
     }
   }

@@ -9,7 +9,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <router-link class="navbar-brand" to="/">Dj-Shocart</router-link>
+        <a @click="home" class="navbar-brand"><a>Dj-Shocart</a></a>
       </div>
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
@@ -30,8 +30,8 @@
          <form class="navbar-form navbar-left">
           <div class="form-group">
             <input v-model="search" type="text" class="form-control" placeholder="Search">
+            <button @click="onSearch" type="submit" class="btn btn-default glyphicon glyphicon-search btn-search"></button>
           </div>
-          <button @click="onSearch" type="submit" class="btn btn-default glyphicon glyphicon-search"></button>
         </form>
         <ul v-if="buttonlogin==true" class="nav navbar-nav navbar-right">
           <li>
@@ -82,15 +82,18 @@ export default {
     }
   },
   methods: {
+    home: function () {
+      this.$emit('showItem')
+    },
     safety: function (event) {
-      let category = 'Safety Shoes'
+      let category = `Safety Shoes`
       this.$emit('safety', category)
     },
     sport: function (event) {
-      let category = 'Sport Shoes'
+      let category = `Sport Shoes`
       this.$emit('sport', category)
     },
-    onSearch: function (event){
+    onSearch: function (event) {
       let search = this.search
       this.$emit('onSearch', search)
     },
@@ -101,3 +104,11 @@ export default {
   }
 }
 </script>
+<style>
+.btn-search {
+  margin-left: 3px;
+  margin-bottom: 2px;
+  padding-left: 25px;
+  padding-right: 25px;
+}
+</style>

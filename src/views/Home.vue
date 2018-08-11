@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Navbar :total="countCart()" @onSearch="onSearchName" @safety="safetyPage" @sport="sportPage" @logout-page="logout" />
+    <Navbar :total="countCart()" @showItem="showItem" @onSearch="onSearchName" @safety="safetyPage" @sport="sportPage" @logout-page="logout" />
     <div id="myModal" class="modal fade" role="dialog">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -92,8 +92,8 @@ import Cart from '@/components/Cart.vue'
 import Carousel from '@/components/Carousel.vue'
 import Product from '@/components/Product.vue'
 
-const baseURL = 'http://e-commerce-server.unguhiu.com'
-// const baseURL = 'http://localhost:3000'
+// const baseURL = 'http://e-commerce-server.unguhiu.com'
+const baseURL = 'http://localhost:3000'
 
 export default {
   name: 'home',
@@ -108,12 +108,12 @@ export default {
       listItem: [],
       cartItem: [],
       checkoutItem: [],
-      totalPrice: 0,
+      totalPrice: 0
     }
   },
   methods: {
     countCart: function () {
-      let total = 0;
+      let total = 0
       for (let i in this.cartItem) {
         total += this.cartItem[i].quantity
       }
@@ -167,15 +167,15 @@ export default {
         })
       })
       swal({
-          title: 'Are you sure?',
-          icon: 'warning',
-          buttons: true,
-          dangerMode: true,
-        })
+        title: 'Are you sure?',
+        icon: 'warning',
+        buttons: true,
+        dangerMode: true
+      })
         .then((delResponse) => {
           if (delResponse) {
             swal('success delete item', {
-              icon: 'success',
+              icon: 'success'
             })
             this.cartItem.splice(index, 1)
             this.totalPrice -= price
@@ -187,7 +187,7 @@ export default {
         })
     },
     addCart: function (list) {
-      if (this.cartItem.length == 0) {
+      if (this.cartItem.length === 0) {
         swal('Success!', 'Success add item', 'success')
         list.stock -= 1
         list.quantity = 1
@@ -196,7 +196,7 @@ export default {
       } else {
         let check = true
         for (let i = 0; i < this.cartItem.length; i++) {
-          if (list.name == this.cartItem[i].name) {
+          if (list.name === this.cartItem[i].name) {
             swal('Success!', 'Success add item', 'success')
             list.stock -= 1
             this.cartItem[i].quantity += 1
@@ -215,7 +215,7 @@ export default {
       localStorage.setItem('cart', JSON.stringify(this.cartItem))
     },
     addQuantity: function (id, stock, price) {
-      let index = this.cartItem.findIndex(cart => cart._id == id)
+      let index = this.cartItem.findIndex(cart => cart._id === id)
       let currentStock = stock + 1
       if (this.cartItem[index].quantity >= currentStock) {
         this.cartItem[index].quantity = currentStock
@@ -226,8 +226,8 @@ export default {
       localStorage.setItem('cart', JSON.stringify(this.cartItem))
     },
     minesQuantity: function (id, price) {
-      let index = this.cartItem.findIndex(cart => cart._id == id)
-      if (this.cartItem[index].quantity == 1) {
+      let index = this.cartItem.findIndex(cart => cart._id === id)
+      if (this.cartItem[index].quantity === 1) {
         this.cartItem[index].quantity = 1
       } else {
         this.cartItem[index].quantity -= 1
@@ -243,31 +243,28 @@ export default {
         this.listItem.forEach(item => {
           this.cartItem.forEach(cart => {
             if (item.name === cart.name && item.category === cart.category) {
-              item.stock === cart.quantity
               axios.put(`${baseURL}/items/update/${item._id}`, {
-                  name: item.name,
-                  price: item.price,
-                  stock: item.stock,
-                  category: item.category
-                }, {
-                  headers: {
-                    apptoken,
-                    id: iduser
-                  }
-                })
+                name: item.name,
+                price: item.price,
+                stock: item.stock,
+                category: item.category
+              }, {
+                headers: {
+                  apptoken,
+                  id: iduser
+                }
+              })
                 .then(response => {
-                  let index = this.listItem.findIndex(item => item._id == response.data.data._id)
-                  this.listItem[index].name = name
-                  this.listItem[index].price = price
-                  this.listItem[index].stock = stock
-                  this.listItem[index].category = category
-
+                  let index = this.listItem.findIndex(item => item._id === response.data.data._id)
+                  this.listItem[index].name = response.data.data.name
+                  this.listItem[index].price = response.data.data.price
+                  this.listItem[index].stock = response.data.data.stock
+                  this.listItem[index].category = response.data.data.category
                 })
                 .catch(err => {
-                  swal("Your error", err.response.data.data.message, "error")
+                  swal('Your error', err.response.data.data.message, 'error')
                 })
             }
-
           })
         })
         let parseJ = JSON.parse(cart)
@@ -279,17 +276,17 @@ export default {
           })
         })
         axios.post(`${baseURL}/transactions/`, {
-            item: this.checkoutItem
-          }, {
-            headers: {
-              apptoken,
-              id: iduser
-            },
-          })
+          item: this.checkoutItem
+        }, {
+          headers: {
+            apptoken,
+            id: iduser
+          }
+        })
           .then(response => {
             swal('Success', response.data.message, 'success')
             this.$router.push({
-              name: "history"
+              name: 'history'
             })
           })
           .catch(err => {
@@ -351,6 +348,5 @@ h5 {
   padding-top: 10px;
   font-size: 18px;
   font-weight: 500;
-
 }
 </style>

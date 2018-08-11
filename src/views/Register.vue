@@ -36,8 +36,8 @@
 import axios from 'axios'
 import swal from 'sweetalert'
 
-const baseURL = 'http://e-commerce-server.unguhiu.com'
-// const baseURL = 'http://localhost:3000'
+// const baseURL = 'http://e-commerce-server.unguhiu.com'
+const baseURL = 'http://localhost:3000'
 
 export default {
   name: 'register',
@@ -45,35 +45,35 @@ export default {
     return {
       fullname: '',
       email: '',
-      password: '',
+      password: ''
     }
   },
   methods: {
-    loginAfterRegister: function (userData){
+    loginAfterRegister: function (userData) {
       axios.post(`${baseURL}/customers/login`, {
-          email: userData.email,
-          password: userData.password
-        })
+        email: userData.email,
+        password: userData.password
+      })
         .then(response => {
-          swal("Welcome", response.data.message, "success")
+          swal('Welcome', response.data.message, 'success')
             .then(() => {
               localStorage.setItem('id', response.data.id)
               localStorage.setItem('name', response.data.fullname)
               localStorage.setItem('token', response.data.access)
               localStorage.setItem('role', response.data.role)
-              if (response.data.role == 'admin')
+              if (response.data.role === 'admin') {
                 this.$router.push({
-                  name: "admin"
+                  name: 'admin'
                 })
-              else {
+              } else {
                 this.$router.push({
-                  name: "home"
+                  name: 'home'
                 })
               }
             })
         })
         .catch(err => {
-          swal("Your error", err.response.data.message, "error")
+          swal('Your error', err.response.data.message, 'error')
         })
     },
     register: function () {
@@ -83,19 +83,19 @@ export default {
         password: this.password
       }
       axios.post(`${baseURL}/customers/register`, {
-          fullname: userData.fullname,
-          email: userData.email,
-          password: userData.password
-        })
+        fullname: userData.fullname,
+        email: userData.email,
+        password: userData.password
+      })
         .then(response => {
-          swal("Welcome", response.data.message, "success")
+          swal('Welcome', response.data.message, 'success')
             .then(() => {
               this.login = false
             })
           this.loginAfterRegister(userData)
         })
         .catch(err => {
-          swal("Your error", err.response.data.data.message, "error")
+          swal('Your error', err.response.data.data.message, 'error')
         })
     }
   }

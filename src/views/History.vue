@@ -58,8 +58,8 @@ import axios from 'axios'
 import swal from 'sweetalert'
 import HistoryList from '@/components/HistoryList.vue'
 
-const baseURL = 'http://e-commerce-server.unguhiu.com'
-// const baseURL = 'http://localhost:3000'
+// const baseURL = 'http://e-commerce-server.unguhiu.com'
+const baseURL = 'http://localhost:3000'
 
 export default {
   name: 'history',
@@ -75,7 +75,7 @@ export default {
     if (!localStorage.getItem('token')) {
       swal('Error', 'you must login first', 'warning')
       this.$router.push({
-        name: "home"
+        name: 'home'
       })
     }
   },
@@ -87,11 +87,11 @@ export default {
       let id = localStorage.getItem('id')
       let apptoken = localStorage.getItem('token')
       axios.get(`${baseURL}/transactions/`, {
-          headers: {
-            apptoken,
-            id
-          }
-        })
+        headers: {
+          apptoken,
+          id
+        }
+      })
         .then(response => {
           this.listHistory = response.data.data
         })
@@ -105,7 +105,7 @@ export default {
       localStorage.removeItem('token')
       localStorage.removeItem('role')
       this.$router.push({
-        name: "login"
+        name: 'login'
       })
     }
   },
