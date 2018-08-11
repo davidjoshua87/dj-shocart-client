@@ -54,93 +54,94 @@
 </template>
 
 <script>
-	import axios from 'axios'
-	import swal from 'sweetalert'
-	import HistoryList from '@/components/HistoryList.vue'
+import axios from 'axios'
+import swal from 'sweetalert'
+import HistoryList from '@/components/HistoryList.vue'
 
-	const baseURL = 'http://e-commerce-server.unguhiu.com'
-	// const baseURL = 'http://localhost:3000'
+// const baseURL = 'http://e-commerce-server.unguhiu.com'
+const baseURL = 'http://localhost:3000'
 
-	export default {
-		name: 'history',
-		components: {
-			HistoryList
-		},
-		data: function () {
-			return {
-				listHistory: []
-			}
-		},
-		created: function () {
-			if (!localStorage.getItem('token')) {
-				swal('Error', 'you must login first', 'warning')
-				this.$router.push({
-					name: "home"
-				})
-			}
-		},
-		methods: {
-			formatPrice: function (price) {
-				return `Rp. ${price.toLocaleString()}`
-			},
-			showTransaction: function () {
-				let id = localStorage.getItem('id')
-				let apptoken = localStorage.getItem('token')
-				axios.get(`${baseURL}/transactions/`, {
-						headers: {
-							apptoken,
-							id
-						}
-					})
-					.then(response => {
-						this.listHistory = response.data.data
-					})
-					.catch(function (err) {
-						swal('Your error', err.response.status, 'error')
-					})
-			},
-			logout: function () {
-				localStorage.removeItem('id')
-				localStorage.removeItem('name')
-				localStorage.removeItem('token')
-				localStorage.removeItem('role')
-				this.$router.push({
-					name: "login"
-				})
-			}
-		},
-		mounted: function () {
-			this.showTransaction()
+export default {
+	name: 'history',
+	components: {
+		HistoryList
+	},
+	data: function () {
+		return {
+			listHistory: []
 		}
+	},
+	created: function () {
+		if (!localStorage.getItem('token')) {
+			swal('Error', 'you must login first', 'warning')
+			this.$router.push({
+				name: "home"
+			})
+		}
+	},
+	methods: {
+		formatPrice: function (price) {
+			return `Rp. ${price.toLocaleString()}`
+		},
+		showTransaction: function () {
+			let id = localStorage.getItem('id')
+			let apptoken = localStorage.getItem('token')
+			axios.get(`${baseURL}/transactions/`, {
+					headers: {
+						apptoken,
+						id
+					}
+				})
+				.then(response => {
+					this.listHistory = response.data.data
+					console.log(this.listHistory, '=liat datanya')
+				})
+				.catch(function (err) {
+					swal('Your error', err.response.status, 'error')
+				})
+		},
+		logout: function () {
+			localStorage.removeItem('id')
+			localStorage.removeItem('name')
+			localStorage.removeItem('token')
+			localStorage.removeItem('role')
+			this.$router.push({
+				name: "login"
+			})
+		}
+	},
+	mounted: function () {
+		this.showTransaction()
 	}
+}
 </script>
 
 <style scoped>
-	.history {
-		background-color: white;
-	}
+.history {
+	background-color: white;
+}
 
-	th.text-center {
-		color: blue;
-	}
+th.text-center {
+	color: blue;
+}
 
-	.top {
-		margin-top: 50px;
-	}
+.top {
+	margin-top: 50px;
+}
 
-	.navbar-default {
-		background-color: azure;
-	}
+.navbar-default {
+	background-color: azure;
+}
 
-	#footer {
-		bottom: 0;
-		width: 100%;
-		position: fixed;
-		height: 60px;
-		background-color: azure;
-	}
+#footer {
+	bottom: 0;
+	width: 100%;
+	position: fixed;
+	height: 60px;
+	background-color: azure;
+}
 
-	.footer-block {
-		margin: 20px 0;
-	}
+.footer-block {
+	margin: 20px 0;
+}
 </style>
