@@ -92,8 +92,8 @@ import Cart from '@/components/Cart.vue'
 import Carousel from '@/components/Carousel.vue'
 import Product from '@/components/Product.vue'
 
-// const baseURL = 'http://e-commerce-server.unguhiu.com'
-const baseURL = 'http://localhost:3000'
+const baseURL = 'http://e-commerce-server.unguhiu.com'
+// const baseURL = 'http://localhost:3000'
 
 export default {
   name: 'home',
@@ -125,7 +125,8 @@ export default {
     safetyPage: function (value) {
       axios.get(`${baseURL}/items/category?category=${value}`)
         .then(response => {
-          this.listItem = response.data.data
+          this.listItem = response.data.data.map(val => val)
+          swal('Success!', 'Success get item', 'success')
         })
         .catch(function (err) {
           swal('Your error', err.response.data.data.message, 'error')
@@ -134,7 +135,8 @@ export default {
     sportPage: function (value) {
       axios.get(`${baseURL}/items/category?category=${value}`)
         .then(response => {
-          this.listItem = response.data.data
+          this.listItem = response.data.data.map(val => val)
+          swal('Success!', 'Success get item', 'success')
         })
         .catch(function (err) {
           swal('Your error', err.response.data.data.message, 'error')
@@ -143,7 +145,8 @@ export default {
     onSearchName: function (value) {
       axios.get(`${baseURL}/items/search?name=${value}`)
         .then(response => {
-          this.listItem = response.data.data
+          this.listItem = response.data.data.map(val => val)
+          swal('Success!', 'Success get item', 'success')
         })
         .catch(function (err) {
           swal('Your error', err.response.data.data.message, 'error')
@@ -152,7 +155,7 @@ export default {
     showItem: function () {
       axios.get(`${baseURL}/items/view`)
         .then(response => {
-          this.listItem = response.data.data
+          this.listItem = response.data.data.map(val => val)
         })
         .catch(function (err) {
           swal('Your error', err.response.data.data.message, 'error')
@@ -179,7 +182,6 @@ export default {
             })
             this.cartItem.splice(index, 1)
             this.totalPrice -= price
-
             localStorage.setItem('cart', JSON.stringify(this.cartItem))
           } else {
             swal('Failed delete item')
